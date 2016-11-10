@@ -38,14 +38,15 @@ public class TreasureList {
 	public void findNextWord(String str, int i) {
 		if(!str.contains("\t")) {
 			this.arr[i] = str;
+			System.out.println(str);
 		} else {
 			int tabIndex = str.indexOf("\t");
 			System.out.println(tabIndex);
 			
 			this.arr[i] = str.substring(0, tabIndex);
-			findNextWord(str.substring(tabIndex + 1, str.length()), i++);
+			findNextWord(str.substring(tabIndex + 1, str.length()), i + 1);
 			
-			System.out.println(str.substring(tabIndex + 1, str.length()));
+			System.out.println(str.substring(0, tabIndex));
 		}
 	}
 	
