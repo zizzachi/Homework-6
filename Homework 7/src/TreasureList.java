@@ -7,12 +7,32 @@ public class TreasureList {
 	private String[] arr;
 	File treasure;
 
+	/**
+	 * Constructor for a TreasureList. Makes an empty array and connects the file.
+	 */
 	public TreasureList() {
 		this.arr = new String[4];
 		this.treasure = new File("/Users/user1/workspace/207-homework-07/"
 				+ "loot-generator-data/small/TreasureClassEx.txt");
 	}
-
+	
+	/**
+	 * Probably unnecessary Line Counter 
+	 */
+	public int countLines() throws FileNotFoundException {
+		Scanner scan = new Scanner(treasure);
+		int count = 0;
+		while (scan.hasNextLine()) {
+			scan.nextLine();
+			count++;
+		}
+		scan.close();
+		return count;
+	}
+	
+	/**
+	 * Populates this.arr with the treasure class
+	 */
 	public void populate() throws FileNotFoundException {
 		Scanner scan = new Scanner(treasure);
 		String line = scan.nextLine();
