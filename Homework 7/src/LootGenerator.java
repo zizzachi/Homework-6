@@ -10,7 +10,7 @@ public class LootGenerator {
 		File prefix = new File("Homework 7/loot-generator-data/small/MagicPrefix.txt");
 		File suffix = new File("Homework 7/loot-generator-data/small/MagicSuffix.txt");
 		File monster = new File("Homework 7/loot-generator-data/small/monstats.txt");
-		File treasure = new File("Homework 7/loot-generator-data/small/TreasureClassEx.txt");
+		//File treasure = new File("Homework 7/loot-generator-data/small/TreasureClassEx.txt");
 		
 		if(armor != null) {
 			System.out.println("Not null.");
