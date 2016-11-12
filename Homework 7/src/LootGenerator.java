@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.sound.sampled.LineEvent;
+
 public class LootGenerator {
 	
 	/** Given a line from a file containing possible monsters, retrieves 
@@ -106,14 +108,6 @@ public class LootGenerator {
 		return map.containsKey(str);
 	}
 	
-//	public static String chooseRandomTC(Map<String, ArrayList<String>> map) {
-//		Random rand = new Random();
-//		int randIndex = rand.nextInt(map.size());
-//		String[] arr = (String[]) map.keySet().toArray();
-//		
-//		return arr[randIndex];
-//	}
-	
 	/** Given the name of a Treasure Class, chooses a random element from the three options
 	 * of that Treasure Class 
 	 * @param map a Hashmap
@@ -153,9 +147,45 @@ public class LootGenerator {
 		}
 		return str;
 	}
+	
+	/** Given a map of Strings and ItemStats and a file, populates the map with each line from the file
+	 * @param map a HashMap
+	 * @param file an Armor file
+	 * @throws FileNotFoundException
+	 */
+	public static void populateItems(Map<String, ItemStats> map, File file) 
+			throws FileNotFoundException {
+		Scanner scan = new Scanner(file);
+		
+		while(scan.hasNextLine()) {
+			String line = scan.nextLine();
+			
+			int tabIndex = line.indexOf("\t");
+			String itemName = line.substring(0, tabIndex);
+			
+			String line2 = line.substring(tabIndex + 1, line.length());
+			int tabIndex2 = line2.indexOf("\t");
+			int itemMin = Integer.parseInt(line2.substring(0, tabIndex2));
+			
+			String line3 = line2.substring(tabIndex2 + 1, line2.length());
+			int itemMax = Integer.parseInt(line3);
+			
+			ItemStats itemStats = new ItemStats(itemMin, itemMax);
+			map.put(itemName, itemStats);
+		}
+		scan.close();
+	}
+	
+	/** From the range of possible stat values of the given item, produces a random stat value
+	 * @param item an Armor piece
+	 * @return a random stat value for the given Armor piece
+	 */
+	public static int generateBaseStats(ItemStats item) {
+		return item.generateRandomItemStat(item.min, item.max);
+	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		//File armor = new File("Homework 7/loot-generator-data/small/armor.txt");
+		File armor = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/armor.txt");
 		File prefix = new File("Homework 7/loot-generator-data/small/MagicPrefix.txt");
 		File suffix = new File("Homework 7/loot-generator-data/small/MagicSuffix.txt");
 		File monster = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/monstats.txt");
@@ -163,33 +193,51 @@ public class LootGenerator {
 		
 
 		/* TEST FOR SMALL DATA FILES */
-		ArrayList<Monster> mlist = new ArrayList<Monster>();
-		generateMonsterList(mlist, monster);
-		Monster mon = pickMonster(mlist);
-		System.out.println(mon.name);
-		
-		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
-		populateMap(TCMap, treasure);
-		//System.out.println(TCMap.keySet());
-		//System.out.println(isTreasureClass("armo60", TCMap));
-		
-		String item = generateBaseItem(TCMap, mon.TC);
-		System.out.println(item);
-		
-		
+//		ArrayList<Monster> mlist = new ArrayList<Monster>();
+//		generateMonsterList(mlist, monster);
+//		Monster mon = pickMonster(mlist);
+//		System.out.println(mon.name);
+//		
+//		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
+//		populateMap(TCMap, treasure);
+//		//System.out.println(TCMap.keySet());
+//		//System.out.println(isTreasureClass("armo60", TCMap));
+//		
+//		String item = generateBaseItem(TCMap, mon.TC);
+//		System.out.println(item);
+//		
+//		
+//		//////////////////
+//		Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
+//		populateItems(itemMap, armor);
+//		System.out.println(itemMap.keySet());
+//		
+//		ItemStats test = itemMap.get(item);
+//		System.out.println(test.min + ", " + test.max);
+//		System.out.println(generateBaseStats(test));
 		
 		
 		/* TEST FOR LARGE DATA FILES */
-//		ArrayList<Monster> mlist = new ArrayList<Monster>();
-//		generateMonsterList(mlist, monster);
-//		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
-//		populateMap(TCMap, treasure);
-//		while(true) {
-//			Monster mon = pickMonster(mlist);
-//			System.out.println(mon.name);
-//			String item = generateBaseItem(TCMap, mon.TC);
-//			System.out.println(item + "\n");
-//		}
+		ArrayList<Monster> mlist = new ArrayList<Monster>();
+		generateMonsterList(mlist, monster);
+		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
+		populateMap(TCMap, treasure);
+		while(true) {
+			Monster mon = pickMonster(mlist);
+			System.out.println(mon.name);
+			String item = generateBaseItem(TCMap, mon.TC);
+			System.out.println(item);
+			
+			Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
+			populateItems(itemMap, armor);
+			
+			ItemStats test = itemMap.get(item);
+			System.out.println(test.min + ", " + test.max);
+			System.out.println(generateBaseStats(test) + "\n");
+		}
+		
+		
+		
 	}
 }
 
