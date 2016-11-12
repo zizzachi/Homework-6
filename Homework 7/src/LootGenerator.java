@@ -56,24 +56,6 @@ public class LootGenerator {
 		return lst.get(randIndex);
 	}
 	
-	/** Given a map and a Treasure Class file, populates the map with the name of each Treasure
-	 * Class as keys and the following three names (in a list) as the values
-	 * @param map a HashMap
-	 * @param file a file containing Treasure Classes
-	 * @throws FileNotFoundException
-	 */
-	public static void populateMap(Map<String, ArrayList<String>> map, File file) 
-			throws FileNotFoundException {
-		Scanner scan = new Scanner(file);
-		ArrayList<String> arr = new ArrayList<String>();
-		while(scan.hasNextLine()) {
-			String line = scan.nextLine();
-			getTCList(line, arr);
-			map.put(getTCName(line), arr);
-		}
-		scan.close();
-	}
-	
 	/** Given a line from a file of Treasure Classes, gets the name of that Treasure Class
 	 * @param line a line from a file of Treasure Classes
 	 * @return the name of the Treasure Class for that line
@@ -184,6 +166,9 @@ public class LootGenerator {
 		return item.generateRandomItemStat(item.min, item.max);
 	}
 
+	/** Generates a random value (0 or 1) to determine if an Affix is produced
+	 * @return true if 0 is generated; false otherwise
+	 */
 	public static boolean generateAffix() {
 		Random rand = new Random();
 		int randValue = rand.nextInt(2);
@@ -193,13 +178,45 @@ public class LootGenerator {
 		}
 		return false;
 	}
+	
+	/** Given a map and an Affix file, populates the map with the given affixes
+	 * @param map a Hashmap
+	 * @param file an Affix file
+	 * @throws FileNotFoundException
+	 */
+	public static void populateAffixes(Map<String, ItemStats> map, File file) 
+			throws FileNotFoundException {
+		Scanner scan = new Scanner(file);
+		
+		while(scan.hasNextLine()) {
+			String line = scan.nextLine();
+			
+			int tabIndex = line.indexOf("\t");
+			String itemName = line.substring(0, tabIndex);
+			
+			String line2 = line.substring(tabIndex + 1, line.length());
+			int tabIndex2 = line2.indexOf("\t");
+			String itemEffect = line2.substring(0, tabIndex2);
+			
+			String line3 = line2.substring(tabIndex2 + 1, line2.length());
+			int tabIndex3 = line3.indexOf("\t");
+			int itemMin = Integer.parseInt(line3.substring(0, tabIndex3));
+			
+			String line4 = line3.substring(tabIndex3 + 1, line3.length());
+			int itemMax = Integer.parseInt(line4);
+			
+			ItemStats itemStats = new ItemStats(itemEffect, itemMin, itemMax);
+			map.put(itemName, itemStats);
+		}
+		scan.close();
+	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		File armor = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/armor.txt");
+		File armor = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/armor.txt");
 		File prefix = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/MagicPrefix.txt");
-		File suffix = new File("Homework 7/loot-generator-data/small/MagicSuffix.txt");
-		File monster = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/monstats.txt");
-		File treasure = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/TreasureClassEx.txt");
+		File suffix = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/MagicSuffix.txt");
+		File monster = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/monstats.txt");
+		File treasure = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/TreasureClassEx.txt");
 		
 
 		/* TEST FOR SMALL DATA FILES */
@@ -210,12 +227,14 @@ public class LootGenerator {
 		Monster mon = pickMonster(mlist);
 		System.out.println(mon.name);
 		
+		///////////////////////////////
 		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
-		populateMap(TCMap, treasure);
+		populateTCMap(TCMap, treasure);
 		//System.out.println(TCMap.keySet());
 		//System.out.println(isTreasureClass("armo60", TCMap));
 		
 		String item = generateBaseItem(TCMap, mon.TC);
+		//////////////////////////////
 		result.addName(item);
 		
 		Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
@@ -226,30 +245,98 @@ public class LootGenerator {
 		result.addBaseStat(generateBaseStats(test));
 		//System.out.println(test.min + ", " + test.max);
 		//System.out.println(generateBaseStats(test));
+
+		if(generateAffix()) {
+			/* Generates Prefix */
+			Map<String, ItemStats> prefixMap = new HashMap<String, ItemStats>();
+			populateAffixes(prefixMap, prefix);
+
+			ArrayList<String> prefixList = new ArrayList<String>(prefixMap.keySet());
+			Random rand = new Random();
+			int randElement = rand.nextInt(prefixList.size());
+			String choice = prefixList.get(randElement);
+			ItemStats magicPrefix = prefixMap.get(choice);
+			
+			result.addPrefix(choice);
+			result.addPrefixStat(magicPrefix.name);
+			result.addPrefixValue(magicPrefix.generateRandomItemStat(magicPrefix.min, magicPrefix.max));
+		}
 		
-		Map<String, ItemStats> prefixMap = new HashMap<String, ItemStats>();
-		//populateItems(prefixMap, prefix);
+		if(generateAffix()) {
+			/* Generates Suffix */
+			Map<String, ItemStats> suffixMap = new HashMap<String, ItemStats>();
+			populateAffixes(suffixMap, suffix);
+
+			ArrayList<String> suffixList = new ArrayList<String>(suffixMap.keySet());
+			Random rand = new Random();
+			int randElement = rand.nextInt(suffixList.size());
+			String choice = suffixList.get(randElement);
+			ItemStats magicSuffix = suffixMap.get(choice);
+			
+			result.addSuffix(choice);
+			result.addSuffixStat(magicSuffix.name);
+			result.addSuffixValue(magicSuffix.generateRandomItemStat(magicSuffix.min, magicSuffix.max));
+		}
 		
 		result.printItem();
 		
 		
 		/* TEST FOR LARGE DATA FILES */
+//		GenerateItem result = new GenerateItem();
 //		ArrayList<Monster> mlist = new ArrayList<Monster>();
 //		generateMonsterList(mlist, monster);
 //		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
 //		populateMap(TCMap, treasure);
 //		while(true) {
 //			Monster mon = pickMonster(mlist);
-//			System.out.println(mon.name);
+//			//System.out.println(mon.name);
 //			String item = generateBaseItem(TCMap, mon.TC);
-//			System.out.println(item);
-//			
+//			//System.out.println(item);
+//
 //			Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
 //			populateItems(itemMap, armor);
-//			
+//
 //			ItemStats test = itemMap.get(item);
-//			System.out.println(test.min + ", " + test.max);
-//			System.out.println(generateBaseStats(test) + "\n");
+//			//System.out.println(test.min + ", " + test.max);
+//			//System.out.println(generateBaseStats(test) + "\n");
+//
+//			System.out.println(mon.name);
+//			result.addName(item);
+//			result.addBaseStat(generateBaseStats(test));
+//			result.printItem();
+//			System.out.println();
+//			
+//			if(generateAffix()) {
+//				/* Generates Prefix */
+//				Map<String, ItemStats> prefixMap = new HashMap<String, ItemStats>();
+//				populateAffixes(prefixMap, prefix);
+//
+//				ArrayList<String> prefixList = new ArrayList<String>(prefixMap.keySet());
+//				Random rand = new Random();
+//				int randElement = rand.nextInt(prefixList.size());
+//				String choice = prefixList.get(randElement);
+//				ItemStats magicPrefix = prefixMap.get(choice);
+//				
+//				result.addPrefix(choice);
+//				result.addPrefixStat(magicPrefix.name);
+//				result.addPrefixValue(magicPrefix.generateRandomItemStat(magicPrefix.min, magicPrefix.max));
+//			}
+//			
+//			if(generateAffix()) {
+//				/* Generates Suffix */
+//				Map<String, ItemStats> suffixMap = new HashMap<String, ItemStats>();
+//				populateAffixes(suffixMap, suffix);
+//
+//				ArrayList<String> suffixList = new ArrayList<String>(suffixMap.keySet());
+//				Random rand = new Random();
+//				int randElement = rand.nextInt(suffixList.size());
+//				String choice = suffixList.get(randElement);
+//				ItemStats magicSuffix = suffixMap.get(choice);
+//				
+//				result.addSuffix(choice);
+//				result.addSuffixStat(magicSuffix.name);
+//				result.addSuffixValue(magicSuffix.generateRandomItemStat(magicSuffix.min, magicSuffix.max));
+//			}
 //		}
 	}
 }

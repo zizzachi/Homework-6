@@ -42,8 +42,24 @@ public class GenerateItem {
 		this.prefixValue = value;
 	}
 	
+	public void addSuffix(String s) {
+		this.suffix = s;
+	}
+	
+	public void addSuffixStat(String stat) {
+		this.suffixStat = stat;
+	}
+	
+	public void addSuffixValue(int value) {
+		this.suffixValue = value;
+	}
+	
 	public void printItem() {
-		System.out.println(prefix + name + suffix);
+		if(!prefix.equals("")) {
+			System.out.print(prefix + " ");
+		}
+		System.out.print(name + " ");
+		System.out.println(suffix);
 		System.out.println("Defense: " + baseStat);
 		if(prefixValue != 0) {
 			System.out.println(prefixStat + " " + prefixValue);
