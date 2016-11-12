@@ -184,60 +184,73 @@ public class LootGenerator {
 		return item.generateRandomItemStat(item.min, item.max);
 	}
 
+	public static boolean generateAffix() {
+		Random rand = new Random();
+		int randValue = rand.nextInt(2);
+
+		if(randValue == 0) {
+			return true;
+		}
+		return false;
+	}
+
 	public static void main(String[] args) throws FileNotFoundException {
 		File armor = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/armor.txt");
-		File prefix = new File("Homework 7/loot-generator-data/small/MagicPrefix.txt");
+		File prefix = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/MagicPrefix.txt");
 		File suffix = new File("Homework 7/loot-generator-data/small/MagicSuffix.txt");
 		File monster = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/monstats.txt");
 		File treasure = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/large/TreasureClassEx.txt");
 		
 
 		/* TEST FOR SMALL DATA FILES */
-//		ArrayList<Monster> mlist = new ArrayList<Monster>();
-//		generateMonsterList(mlist, monster);
-//		Monster mon = pickMonster(mlist);
-//		System.out.println(mon.name);
-//		
-//		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
-//		populateMap(TCMap, treasure);
-//		//System.out.println(TCMap.keySet());
-//		//System.out.println(isTreasureClass("armo60", TCMap));
-//		
-//		String item = generateBaseItem(TCMap, mon.TC);
-//		System.out.println(item);
-//		
-//		
-//		//////////////////
-//		Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
-//		populateItems(itemMap, armor);
-//		System.out.println(itemMap.keySet());
-//		
-//		ItemStats test = itemMap.get(item);
-//		System.out.println(test.min + ", " + test.max);
-//		System.out.println(generateBaseStats(test));
+		GenerateItem result = new GenerateItem();
+		
+		ArrayList<Monster> mlist = new ArrayList<Monster>();
+		generateMonsterList(mlist, monster);
+		Monster mon = pickMonster(mlist);
+		System.out.println(mon.name);
+		
+		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
+		populateMap(TCMap, treasure);
+		//System.out.println(TCMap.keySet());
+		//System.out.println(isTreasureClass("armo60", TCMap));
+		
+		String item = generateBaseItem(TCMap, mon.TC);
+		result.addName(item);
+		
+		Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
+		populateItems(itemMap, armor);
+		//System.out.println(itemMap.keySet());
+		
+		ItemStats test = itemMap.get(item);
+		result.addBaseStat(generateBaseStats(test));
+		//System.out.println(test.min + ", " + test.max);
+		//System.out.println(generateBaseStats(test));
+		
+		Map<String, ItemStats> prefixMap = new HashMap<String, ItemStats>();
+		//populateItems(prefixMap, prefix);
+		
+		result.printItem();
 		
 		
 		/* TEST FOR LARGE DATA FILES */
-		ArrayList<Monster> mlist = new ArrayList<Monster>();
-		generateMonsterList(mlist, monster);
-		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
-		populateMap(TCMap, treasure);
-		while(true) {
-			Monster mon = pickMonster(mlist);
-			System.out.println(mon.name);
-			String item = generateBaseItem(TCMap, mon.TC);
-			System.out.println(item);
-			
-			Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
-			populateItems(itemMap, armor);
-			
-			ItemStats test = itemMap.get(item);
-			System.out.println(test.min + ", " + test.max);
-			System.out.println(generateBaseStats(test) + "\n");
-		}
-		
-		
-		
+//		ArrayList<Monster> mlist = new ArrayList<Monster>();
+//		generateMonsterList(mlist, monster);
+//		Map<String, ArrayList<String>> TCMap = new HashMap<String, ArrayList<String>>();
+//		populateMap(TCMap, treasure);
+//		while(true) {
+//			Monster mon = pickMonster(mlist);
+//			System.out.println(mon.name);
+//			String item = generateBaseItem(TCMap, mon.TC);
+//			System.out.println(item);
+//			
+//			Map<String, ItemStats> itemMap = new HashMap<String, ItemStats>();
+//			populateItems(itemMap, armor);
+//			
+//			ItemStats test = itemMap.get(item);
+//			System.out.println(test.min + ", " + test.max);
+//			System.out.println(generateBaseStats(test) + "\n");
+//		}
 	}
 }
 
