@@ -25,6 +25,24 @@ public class LootGenerator {
 		}
 	}
 	
+	
+	/** Given a map of Strings and ItemStats and a file, populates the map with each line from the file
+	 * @param map a HashMap
+	 * @param file an Treasure Class file
+	 * @throws FileNotFoundException
+	 */
+	public static void populateTCMap(Map<String, ArrayList<String>> map, File file) 
+			throws FileNotFoundException {
+		Scanner scan = new Scanner(file);
+		ArrayList<String> arr = new ArrayList<String>();
+		while(scan.hasNextLine()) {
+			String line = scan.nextLine();
+			getTCList(line, arr);
+			map.put(getTCName(line), arr);
+		}
+		scan.close();
+	}
+	
 	/** Given a file containing possible monsters, generates a list of Monsters, 
 	 * holding their name and Treasure Class
 	 * @param lst a list of Monsters
@@ -212,11 +230,16 @@ public class LootGenerator {
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		File armor = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/armor.txt");
-		File prefix = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/MagicPrefix.txt");
-		File suffix = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/MagicSuffix.txt");
-		File monster = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/monstats.txt");
-		File treasure = new File("/Users/chiarazizza/Documents/workspace/Homework 7/loot-generator-data/small/TreasureClassEx.txt");
+		File armor = new File("/Users/chiarazizza/Documents/workspace/Homework 7/"
+				+ "loot-generator-data/small/armor.txt");
+		File prefix = new File("/Users/chiarazizza/Documents/workspace/Homework 7/"
+				+ "loot-generator-data/small/MagicPrefix.txt");
+		File suffix = new File("/Users/chiarazizza/Documents/workspace/Homework 7/"
+				+ "loot-generator-data/small/MagicSuffix.txt");
+		File monster = new File("/Users/chiarazizza/Documents/workspace/Homework 7/"
+				+ "loot-generator-data/small/monstats.txt");
+		File treasure = new File("/Users/chiarazizza/Documents/workspace/Homework 7/"
+				+ "loot-generator-data/small/TreasureClassEx.txt");
 		
 
 		/* TEST FOR SMALL DATA FILES */
